@@ -1,0 +1,23 @@
+.block-api-header {
+    font-size: 18px;
+    margin-bottom: 0;
+    color: #ff0000;
+}
+
+.block-api {
+    font-size: 14px;
+}
+
+.block-stats-header {
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.navbar-brand-header {
+    float: left;
+    height: 50px;
+    padding: 15px 15px;
+    font-size: 18px;
+    line-height: 20px;
+    color: #ffffff;
+}
