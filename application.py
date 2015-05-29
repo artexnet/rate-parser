@@ -38,7 +38,7 @@ db.create_all()
 
 
 # Parser initialization
-from parser import Parser
+from parsers import Parser
 parser = Parser()
 counter = 0
 
