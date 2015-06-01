@@ -12,7 +12,7 @@ def get_bank_latest_rates(bank_id):
     r = aliased(Rate)
     max_dates = Rate.query.with_entities(func.max(r.update_time).label('maxdate')). \
         filter(and_(Rate.bank_id == r.bank_id, Rate.bank_id == bank_id))
-    return Rate.query.filter_by(update_time=max_dates).one()
+    return Rate.query.filter_by(update_time=max_dates).first()
 
 
 def get_bank_rates_from_date(bank_id, date_from):
