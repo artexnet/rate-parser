@@ -4,18 +4,19 @@ import time
 import logging
 import schedule
 
-from threading import Thread
 from logging.handlers import RotatingFileHandler
-
-from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from threading import Thread
 from sqlalchemy.exc import SQLAlchemyError
+from flask import Flask
+
+from models import db, Bank, Rate
+from web.views import pages, cache
+from web.service import api
+from web.error_handlers import bad_request, unauthorized, not_found, not_implemented, internal_server_error
+from web.resources import rs
+from parsers import Parser
 
 from config import *
-from web.views import pages
-from web.service import api
-from web.error_handlers import *
-from web.resources import rs
 
 
 # Flask application initialization
@@ -31,16 +32,25 @@ app.register_error_handler(500, internal_server_error)
 app.register_error_handler(501, not_implemented)
 
 
-# Database initialization
-db = SQLAlchemy(app)
-from models import *
-db.create_all()
+# Database registration with Flask app
+db.init_app(app)
+
+
+# Cache registration with Flask app
+cache.init_app(app)
 
 
 # Parser initialization
-from parsers import Parser
 parser = Parser()
 counter = 0
+
+
+# DB structure initialization and parser first run
+with app.app_context():
+    db.create_all()
+    # running parser on first start of app
+    if Rate.query.all().__len__() == 0:
+        parser.get_rates()
 
 
 # Scheduled job
@@ -87,10 +97,6 @@ if __name__ == '__main__':
     handler.setLevel(logging.INFO)
     handler.formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     app.logger.addHandler(handler)
-
-    # running parser on first start
-    if Rate.query.all().__len__() == 0:
-        parser.get_rates()
 
     # starting Flask application
     app.run(debug=True, use_reloader=False)

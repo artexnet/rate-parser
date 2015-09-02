@@ -6,7 +6,7 @@ import logging
 from logging import Logger
 from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime
-from grab import *
+from grab import Grab, DataNotFound
 
 from config import PARSER_LOG_FILE, OUTPUT_FILE
 
@@ -42,12 +42,12 @@ class Parser:
     # Requests counter
     number_of_requests = 0
 
-    # Construction
     def __init__(self):
+        """Initializes a new instance of the class."""
         self.log.info('parser is started')
 
-    # Gets latest rates from target site and returns as a map
     def get_rates(self):
+        """Gets latest rates from target resource and stores in maps."""
         self.__g.go(URL_EN)
         self.banks = {}
         self.rates = {}

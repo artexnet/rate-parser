@@ -12,6 +12,10 @@ APPLICATION_LOG_FILE = os.path.join(basedir, 'logs/application.log')
 PARSER_LOG_FILE = os.path.join(basedir, 'logs/parser.log')
 
 # APP SETTINGS
-PARSING_INTERVAL_SECONDS = 1800  # 30min
+PARSING_INTERVAL_SECONDS = 3600  # 60min
 OUTPUT_FILE = os.path.join(basedir, 'out.html')
 
+# CACHE
+CACHE_TIMEOUT = 1800  # 30min
+# CACHE_TYPE = 'simple'
+CACHE_TYPE = 'memcached'

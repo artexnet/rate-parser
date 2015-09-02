@@ -1,13 +1,21 @@
 __author__ = 'arthur'
 
 from flask import Blueprint, render_template
+from flask.ext.cache import Cache
+from config import CACHE_TYPE, CACHE_TIMEOUT
 
+
+# Blueprint initialization
 pages = Blueprint('pages', __name__)
 
+# Cache initialization
+cache = Cache(config={'CACHE_TYPE': CACHE_TYPE})
 
-# Default (root) route shows the home page
+
 @pages.route('/')
+@cache.cached(timeout=CACHE_TIMEOUT)
 def index():
+    """Default (root) route shows the home page."""
     from managers import banks_manager, rates_manager
 
     # acquiring number of all banks in DB

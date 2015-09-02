@@ -1,10 +1,11 @@
 __author__ = 'arthur'
 
-from application import db
+from flask.ext.sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
 
-# Represents Bank entity
 class Bank(db.Model):
+    """Represents Bank entity."""
     id = db.Column(db.Integer, primary_key=True)
     uri_logo = db.Column(db.String(250), unique=True)
     name_am = db.Column(db.String(50), unique=True)
@@ -28,8 +29,8 @@ class Bank(db.Model):
         return unicode(self).encode('utf-8')
 
 
-# Represents Rate of the bank entity
 class Rate(db.Model):
+    """Represents the Rates of the bank."""
     id = db.Column(db.Integer, primary_key=True)
     update_time = db.Column(db.DateTime, nullable=False)
     declared_update_time = db.Column(db.DateTime, nullable=False)

@@ -4,8 +4,8 @@ from flask import Blueprint, jsonify
 
 api = Blueprint('api', __name__)
 
-from managers import banks_manager, rates_manager
 from helpers.service_helper import make_public_bank, make_public_rate, build_average_data_map
+from managers import banks_manager, rates_manager
 
 
 # Shows the corresponding service is running message
