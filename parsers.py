@@ -60,7 +60,7 @@ class Parser:
             try:
                 # acquiring bank logo
                 img_selector_list = table_row.select('.//td[@class="bank"]/img/@src').one()
-                bank_logo_uri = str(img_selector_list.node)
+                bank_logo_uri = img_selector_list.text()
 
                 # acquiring bank name in English
                 bank_html_name = table_row.select('.//td[@class="bank"]/a').text()
@@ -105,7 +105,7 @@ class Parser:
             try:
                 img_selector_list = table_row.select('.//td[@class="bank"]/img/@src').one()
                 bank_html_name = table_row.select('.//td[@class="bank"]/a').text()
-                bank_logo_uri = str(img_selector_list.node)
+                bank_logo_uri = img_selector_list.text()
                 bank_name_am = re.sub('[.]', '', bank_html_name).strip()
                 bank = self.banks[bank_logo_uri]
                 bank.name_am = bank_name_am
@@ -118,7 +118,7 @@ class Parser:
             try:
                 img_selector_list = table_row.select('.//td[@class="bank"]/img/@src').one()
                 bank_html_name = table_row.select('.//td[@class="bank"]/a').text()
-                bank_logo_uri = str(img_selector_list.node)
+                bank_logo_uri = img_selector_list.text()
                 bank_name_ru = re.sub('[.]', '', bank_html_name).strip()
                 bank = self.banks[bank_logo_uri]
                 bank.name_ru = bank_name_ru
