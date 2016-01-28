@@ -19,6 +19,12 @@ class Bank(db.Model):
         self.uri_logo = uri_logo
         self.update_time = update_time
 
+    def __eq__(self, other):
+        return isinstance(other, Bank) and self.id == other.id
+
+    def __hash__(self):
+        return hash(self.__attrs())
+
     def __unicode__(self):
         return self.name_en
 
@@ -43,6 +49,12 @@ class Rate(db.Model):
 
     def __init__(self, update_time):
         self.update_time = update_time
+
+    def __eq__(self, other):
+        return isinstance(other, Rate) and self.id == other.id
+
+    def __hash__(self):
+        return hash(self.__attrs())
 
     def __unicode__(self):
         return self.update_time.strftime('%d/%m/%Y %H:%M:%S') + ' - ' + \
