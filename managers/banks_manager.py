@@ -33,7 +33,9 @@ def get_usd_selling_best_rate_banks():
         .filter(
             and_(Rate.update_time == get_last_update_time_as_query(),
                  Rate.usd_selling == get_usd_selling_min_rate_as_query())
-        ).all()
+        )\
+        .group_by(Bank.id)\
+        .all()
 
 
 def get_eur_selling_best_rate_banks():
@@ -44,7 +46,9 @@ def get_eur_selling_best_rate_banks():
         .filter(
             and_(Rate.update_time == get_last_update_time_as_query(),
                  Rate.eur_selling == get_eur_selling_min_rate_as_query())
-        ).all()
+        )\
+        .group_by(Bank.id)\
+        .all()
 
 
 def get_usd_buying_best_rate_banks():
@@ -55,7 +59,9 @@ def get_usd_buying_best_rate_banks():
         .filter(
             and_(Rate.update_time == get_last_update_time_as_query(),
                  Rate.usd_buying == get_usd_buying_max_rate_as_query())
-        ).all()
+        )\
+        .group_by(Bank.id)\
+        .all()
 
 
 def get_eur_buying_best_rate_banks():
@@ -66,4 +72,6 @@ def get_eur_buying_best_rate_banks():
         .filter(
             and_(Rate.update_time == get_last_update_time_as_query(),
                  Rate.eur_buying == get_eur_buying_max_rate_as_query())
-        ).all()
+        )\
+        .group_by(Bank.id)\
+        .all()
