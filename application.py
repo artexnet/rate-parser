@@ -1,10 +1,12 @@
 __author__ = 'arthur'
 
-import time
 import logging
 import schedule
+import time
 
+from logging import Logger
 from logging.handlers import RotatingFileHandler
+
 from threading import Thread
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Flask
@@ -16,7 +18,7 @@ from web.error_handlers import bad_request, unauthorized, not_found, not_impleme
 from web.resources import rs
 from parsers import Parser
 
-from config import *
+from config import SQLALCHEMY_DATABASE_URI, APPLICATION_LOG_FILE, PARSING_INTERVAL_SECONDS
 
 
 # Flask application initialization
@@ -32,17 +34,33 @@ app.register_error_handler(500, internal_server_error)
 app.register_error_handler(501, not_implemented)
 
 
-# Database registration with Flask app
-db.init_app(app)
+# Logging handler initialization
+handler = RotatingFileHandler(APPLICATION_LOG_FILE, maxBytes=10000, backupCount=2)
+handler.setLevel(logging.INFO)
+handler.formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+
+# Logger initialization
+log = Logger('Application-log')
+log.addHandler(handler)
+log.info('Application logger initialized')
 
 
 # Cache registration with Flask app
 cache.init_app(app)
+log.info('Cache initialized')
+
+
+# Database registration with Flask app
+db.app = app
+db.init_app(app)
+log.info('DB initialized')
 
 
 # Parser initialization
 parser = Parser()
 counter = 0
+log.info('Parser initialized')
 
 
 # DB structure initialization and parser first run
@@ -56,12 +74,16 @@ with app.app_context():
 # Scheduled job
 def run_schedule():
     global counter
+    log.info('scheduler started')
     while 1:
         schedule.run_pending()
         if counter < parser.number_of_requests:
             # acquiring banks and rates data
             banks = parser.banks
             rates = parser.rates
+            log.info('data gathered')
+            log.info('banks: %s' % banks.__len__())
+            log.info('rates: %s' % rates.__len__())
 
             # saving data into DB
             for logo, bank in banks.iteritems():
@@ -79,23 +101,21 @@ def run_schedule():
                 try:
                     db.session.commit()
                 except SQLAlchemyError as e:
-                    app.logger.error(e.message, e)
+                    log.error(e.message, e)
 
             # increasing counter
             counter += 1
         time.sleep(1)
 
+log.info('starting scheduler thread')
+schedule.every(PARSING_INTERVAL_SECONDS).seconds.do(parser.get_rates)
+t = Thread(target=run_schedule)
+t.start()
+
 
 # Main
 if __name__ == '__main__':
-    schedule.every(PARSING_INTERVAL_SECONDS).seconds.do(parser.get_rates)
-    t = Thread(target=run_schedule)
-    t.start()
-
     # configuring application logger
-    handler = RotatingFileHandler(APPLICATION_LOG_FILE, maxBytes=10000, backupCount=2)
-    handler.setLevel(logging.INFO)
-    handler.formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     app.logger.addHandler(handler)
 
     # starting Flask application
