@@ -18,7 +18,7 @@ def resources():
         'get_rates_average_from': '/api/v1.0/rates/average/{yyyy-MM-dd}',
         'get_rates_average_from_to': '/api/v1.0/rates/average/{yyyy-MM-dd}/{yyyy-MM-dd}',
     }
-    return jsonify({'resources': data})
+    return jsonify(resources=data)
 
 
 
