@@ -15,9 +15,12 @@ from config import PARSER_LOG_FILE, OUTPUT_FILE
 FMT_DATE_TIME_PATTERN_RATE_AM = '%Y %d %b, %H:%M'
 
 # Target URLs
-URL_AM = 'http://rate.am/am/armenian-dram-exchange-rates/banks/non-cash'
-URL_EN = 'http://rate.am/en/armenian-dram-exchange-rates/banks/non-cash'
-URL_RU = 'http://rate.am/ru/armenian-dram-exchange-rates/banks/non-cash'
+URL_AM = 'http://rate.am/am'
+# URL_AM = 'http://rate.am/am/armenian-dram-exchange-rates/banks/non-cash'
+URL_EN = 'http://rate.am/en'
+# URL_EN = 'http://rate.am/en/armenian-dram-exchange-rates/banks/non-cash'
+URL_RU = 'http://rate.am/ru'
+# URL_RU = 'http://rate.am/ru/armenian-dram-exchange-rates/banks/non-cash'
 
 
 class Parser:
@@ -48,7 +51,10 @@ class Parser:
 
     def get_rates(self):
         """Gets latest rates from target resource and stores in maps."""
+        self.log.info('number of requests: %s' % self.number_of_requests)
+        self.log.info('opening URL %s' % URL_EN)
         self.__g.go(URL_EN)
+        self.log.info('done')
         self.banks = {}
         self.rates = {}
 
@@ -100,6 +106,7 @@ class Parser:
                 self.log.error(str(err))
 
         # acquiring name of the banks in Armenian
+        self.log.info('opening URL %s' % URL_AM)
         self.__g.go(URL_AM)
         for table_row in self.__g.doc.select('//table[@id="rb"]/tr'):
             try:
@@ -113,6 +120,7 @@ class Parser:
                 pass  # Rows passed through filter, that do not contain valuable data
 
         # acquiring name of the banks in Russian
+        self.log.info('opening URL %s' % URL_RU)
         self.__g.go(URL_RU)
         for table_row in self.__g.doc.select('//table[@id="rb"]/tr'):
             try:
@@ -127,6 +135,7 @@ class Parser:
 
         # increasing counter
         self.number_of_requests += 1
+        self.log.info('number of requests update: %s' % self.number_of_requests)
 
     # /get_rates()
 # /class Parser
